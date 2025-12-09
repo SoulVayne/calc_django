@@ -1,43 +1,48 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from .forms import CalculatorForm
+from datetime import datetime
+import math
 
-def index(request):
+history = []
+
+def calculator_view(request):
     result = None
-    error = None
-    a = ''
-    b = ''
-    op = ''
-
     if request.method == 'POST':
-        a = request.POST.get('a', '').strip()
-        b = request.POST.get('b', '').strip()
-        op = request.POST.get('operation', '')
-
-        try:
-            x = float(a)
-            y = float(b)
+        form = CalculatorForm(request.POST)
+        if form.is_valid():
+            a = form.cleaned_data['a']
+            b = form.cleaned_data.get('b')
+            op = form.cleaned_data['operation']
 
             if op == 'add':
-                result = x + y
+                result = a + b
             elif op == 'sub':
-                result = x - y
+                result = a - b
             elif op == 'mul':
-                result = x * y
+                result = a * b
             elif op == 'div':
-                if y == 0:
-                    error = 'Деление на ноль невозможно.'
-                else:
-                    result = x / y
-            else:
-                error = 'Неизвестная операция.'
+                result = a / b
+            elif op == 'pow':
+                result = a ** b
+            elif op == 'sqrt':
+                result = math.sqrt(a)
 
-        except ValueError:
-            error = 'Пожалуйста, вводите числа (например: 2 или 3.5).'
+            history.append({
+                'a': a,
+                'b': b,
+                'operation': dict(form.fields['operation'].choices)[op],
+                'result': result,
+                'timestamp': datetime.now()
+            })
+            if len(history) > 10:
+                history.pop(0)
+    else:
+        form = CalculatorForm()
 
-    context = {
-        'result': result,
-        'error': error,
-        'a': a,
-        'b': b,
-        'op': op,
-    }
-    return render(request, 'calculator/index.html', context)
+    return render(request, 'calculator/calculator.html', {'form': form, 'result': result})
+
+def history_view(request):
+    if request.method == 'POST' and request.POST.get('clear') == 'true':
+        history.clear()
+        return redirect('calculator:history')
+    return render(request, 'calculator/history.html', {'history': history})

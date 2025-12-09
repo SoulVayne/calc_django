@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Калькулятор</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+    nav a { margin-right: 10px; }
+    input, select, button { padding: 6px; margin: 4px 0; }
+    .error { color: red; }
+    table { border-collapse: collapse; width: 100%; }
+    table, th, td { border: 1px solid black; }
+    th, td { padding: 6px; text-align: center; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="{% url 'calculator:calculator' %}">Калькулятор</a> |
+    <a href="{% url 'calculator:history' %}">История</a>
+  </nav>
+  <hr>
+  {% block content %}{% endblock %}
+</body>
+</html>

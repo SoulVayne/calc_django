@@ -1,0 +1,31 @@
+{% extends 'calculator/base.html' %}
+{% block content %}
+<h1>История операций</h1>
+
+{% if history %}
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" name="clear" value="true">Очистить историю</button>
+</form>
+<table>
+  <tr>
+    <th>Число A</th>
+    <th>Операция</th>
+    <th>Число B</th>
+    <th>Результат</th>
+    <th>Время</th>
+  </tr>
+  {% for item in history %}
+  <tr>
+    <td>{{ item.a }}</td>
+    <td>{{ item.operation }}</td>
+    <td>{{ item.b }}</td>
+    <td>{{ item.result }}</td>
+    <td>{{ item.timestamp|date:"d.m.Y H:i:s" }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>История пуста.</p>
+{% endif %}
+{% endblock %}
